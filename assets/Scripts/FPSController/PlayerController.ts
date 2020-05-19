@@ -1,8 +1,12 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec3, AudioSourceComponent } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerController')
 export class PlayerController extends Component {
+
+    private audioSource:AudioSourceComponent = null;
+
+    private 
     /* class member could be defined like this */
     // dummy = '';
 
@@ -17,4 +21,15 @@ export class PlayerController extends Component {
     // update (deltaTime: number) {
     //     // Your update function goes here.
     // }
+    PlaceCell(worldPos:Vec3,){
+
+    }
+
+    Move(direction:Vec3){
+
+    }
+
+    RotateAt(){
+
+    }
 }

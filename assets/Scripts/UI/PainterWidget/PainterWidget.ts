@@ -1,12 +1,12 @@
 import { _decorator, Component, Node, NodePool, Color, ButtonComponent, EventHandler, LayoutComponent, Prefab, UITransformComponent, UIOpacityComponent } from 'cc';
 import { UIBaseWidget } from '../UIFrame/UIBaseWidget';
-import { ColorSelector } from './ColorSelector';
 import { NoteScale } from '../../Musicals/Musicals';
 import { MessageManager } from '../../MessageSystem/MessageManager';
 import { PaintConfig } from '../../Painting/PaintConfig';
 import { UIManager, UIPrefabNames } from '../UIFrame/UIManager';
 import { PaintableGrid } from './PaintableGrid';
 import { CubeManager } from '../../NoteCube/CubeManager';
+import { PaletteGrid } from './PaletteGrid';
 const { ccclass, property } = _decorator;
 
 /**绘制模式 可以为方块涂色或者擦除 */
@@ -18,6 +18,7 @@ export enum PaintMode {
 export const PaintMessages = {
     //UI内部的
     UI_GridClicked:"UI_GridClicked",
+    PaletteGridClicked:"PaletteGridClicked",
 
 
 
@@ -28,7 +29,7 @@ export const PaintMessages = {
     ToNextLayer: "ToNextLayer",
     ToLastLayer :"ToLastLayer",
     SwitchScale : "SwitchScale",
-    SwitchCurrentColor:"SwitchCurrentColor",
+
     PaintCell :"GridPainted",
     EraseCell: "GridErased",
     SwitchOctave:"SwitchOctave",
@@ -62,10 +63,6 @@ export class PainterWidget extends UIBaseWidget {
     @property(NodePool)
     private gridNodePool:NodePool = null;
 
-    /**选色条窗口的引用 */
-    @property(ColorSelector)
-    private colorSelector:ColorSelector = null;
-
     /**"画笔" 按钮的节点引用 */
     @property(ButtonComponent)
     private paintButton:ButtonComponent = null;
@@ -73,6 +70,7 @@ export class PainterWidget extends UIBaseWidget {
     /**"橡皮"按钮的节点引用 */
     @property(ButtonComponent)
     private eraseButton:ButtonComponent = null;
+
 
     private currentOctave:number = 4;
 
@@ -120,6 +118,7 @@ export class PainterWidget extends UIBaseWidget {
         this.initGridsArr();
         MessageManager.getInstance().Register(PaintMessages.OctavedCurScaleUpdated,this.onOctavedCurScaleUpdated,this);
         MessageManager.getInstance().Register(PaintMessages.ChangeRank,this.generateGrids,this);
+        MessageManager.getInstance().Register(PaintMessages.PaletteGridClicked,this.onPaletteGridClicked,this);
     }
 
     start () {
@@ -247,12 +246,16 @@ export class PainterWidget extends UIBaseWidget {
     private onOctavedCurScaleUpdated(curScaleOctaved:NoteScale){
         this.currentOctavedScale = curScaleOctaved;
         
-        this.currentNote = this.currentOctavedScale.Notes[5];
+        this.currentNote = this.currentOctavedScale.Notes[0];
         this.currentPaintColor = this.currentOctavedScale.ScaleNoteColorDictionary.get(this.currentNote);
-        for(let i = 0; i < this.currentOctavedScale.Notes.length; i++)
+        let notes = this.currentOctavedScale.Notes;
+        for(let i = 0; i <notes.length; i++)
         {
             console.log(this.currentOctavedScale.ScaleNoteColorDictionary.get(this.currentOctavedScale.Notes[i]).toHEX("#rrggbbaa"));
+            
         }
+        
+        
         
     }
 
@@ -268,7 +271,12 @@ export class PainterWidget extends UIBaseWidget {
 
             return this.currentPaintColor;
 
+    }
 
+    onPaletteGridClicked(notename:string,color:Color){
+        console.log("In Change Color Callback " + notename,color.toHEX("#rrggbb"));
+        this.currentNote = notename;
+        this.currentPaintColor = color;
     }
 
     Hide(){

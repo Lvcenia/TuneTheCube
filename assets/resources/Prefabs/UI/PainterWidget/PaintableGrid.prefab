@@ -96,13 +96,13 @@
     "_color": {
       "__type__": "cc.Color",
       "r": 255,
-      "g": 0,
-      "b": 0,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_sharedMaterial": null,
     "_spriteFrame": {
-      "__uuid__": "8b51ebe1-6fce-4821-874f-2c96f218e63b@f9941"
+      "__uuid__": "135a1fef-93ff-457e-92ea-ee758cb1684f@f9941"
     },
     "_type": 1,
     "_fillType": 0,

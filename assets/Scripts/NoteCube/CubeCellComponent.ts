@@ -27,7 +27,7 @@ export class CubeCellComponent extends Component {
         this.anim = this.getComponent(AnimationComponent);
         this.modelComponent = this.getComponent(ModelComponent);
         this.renderPass =  this.modelComponent.material.passes[0];
-        this.colorRenderHandle = this.renderPass.getHandle('albedo');
+        this.colorRenderHandle = this.renderPass.getHandle('emissive');
 
     }
 
