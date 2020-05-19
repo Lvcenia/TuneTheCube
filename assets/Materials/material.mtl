@@ -9,6 +9,7 @@
   "_techIdx": 0,
   "_defines": [
     {
+      "USE_INSTANCING": true,
       "USE_BATCHING": true
     }
   ],
@@ -25,19 +26,12 @@
   ],
   "_props": [
     {
-      "mainColor": {
-        "__type__": "cc.Color",
-        "r": 255,
-        "g": 0,
-        "b": 61,
-        "a": 192
-      },
       "emissive": {
         "__type__": "cc.Color",
-        "r": 252,
-        "g": 13,
-        "b": 13,
-        "a": 255
+        "r": 255,
+        "g": 190,
+        "b": 190,
+        "a": 0
       },
       "mainTexture": {
         "__uuid__": "8b51ebe1-6fce-4821-874f-2c96f218e63b@6c48a"

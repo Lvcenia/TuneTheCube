@@ -1,8 +1,12 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, NodePool } from 'cc';
+import { UIBaseWidget } from '../UIFrame/UIBaseWidget';
 const { ccclass, property } = _decorator;
 
 @ccclass('LayerBoxWidget')
-export class LayerBoxWidget extends Component {
+export class LayerBoxWidget extends UIBaseWidget {
+
+    @property(NodePool)
+    private itemNodePool:NodePool = null;
     /* class member could be defined like this */
     // dummy = '';
 
@@ -11,6 +15,7 @@ export class LayerBoxWidget extends Component {
     // serializableDummy = 0;
 
     start () {
+        
         // Your initialization goes here.
     }
 

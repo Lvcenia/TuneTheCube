@@ -31,10 +31,43 @@
         "isUuid": true,
         "imageUuidOrDatabaseUri": "8b51ebe1-6fce-4821-874f-2c96f218e63b"
       }
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "8b51ebe1-6fce-4821-874f-2c96f218e63b@f9941",
+      "displayName": "Test贴图",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "ver": "1.0.8",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {},
+      "userData": {
+        "trimType": "auto",
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": -41.5,
+        "offsetY": -23.5,
+        "trimX": 93,
+        "trimY": 80,
+        "width": 331,
+        "height": 487,
+        "rawWidth": 600,
+        "rawHeight": 600,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "8b51ebe1-6fce-4821-874f-2c96f218e63b@6c48a",
+        "atlasUuid": ""
+      }
     }
   },
   "userData": {
-    "type": "texture",
-    "redirect": "8b51ebe1-6fce-4821-874f-2c96f218e63b@6c48a"
+    "type": "sprite-frame",
+    "redirect": "8b51ebe1-6fce-4821-874f-2c96f218e63b@f9941"
   }
 }

@@ -1,11 +1,8 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
-@ccclass('LayerItem')
-export class LayerItem extends Component {
-
-    private attachedLayer:number = 0;
-    private isDragging:boolean = false;
+@ccclass('KeyboardMouseHandler')
+export class KeyboardMouseHandler extends Component {
     /* class member could be defined like this */
     // dummy = '';
 
@@ -20,23 +17,4 @@ export class LayerItem extends Component {
     // update (deltaTime: number) {
     //     // Your update function goes here.
     // }
-
-    /**单击时，打开对应层的编辑窗口 */
-    onClicked(){
-
-    }
-
-    /**长按时 脱离Layout */
-    onBeginDrag(){
-
-    }
-
-    /**拖拽时 */
-    onDragging(){
-
-    }
-
-    onEndDrag(){
-        
-    }
 }

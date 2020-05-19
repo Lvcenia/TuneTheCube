@@ -1,8 +1,13 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, SliderComponent, Color } from 'cc';
+import { NoteScale } from '../../Musicals/Musicals';
 const { ccclass, property } = _decorator;
 
 @ccclass('ColorSelector')
 export class ColorSelector extends Component {
+    private currentNote:string;
+    private currentColor:Color;
+
+    
     /* class member could be defined like this */
     // dummy = '';
 
@@ -17,4 +22,7 @@ export class ColorSelector extends Component {
     // update (deltaTime: number) {
     //     // Your update function goes here.
     // }
+    onScaleChanged(toScale:NoteScale){
+
+    }
 }

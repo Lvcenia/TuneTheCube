@@ -10,10 +10,12 @@ export class Dictionary<V> {
   }
   public has(key: string): boolean {
       //console.log("have :" + this.items[key] === undefined ? false:true);
-    return (typeof this.items[key]) === "undefined" ? false:true;
+    return (this.items[key]) === undefined ? false:true;
   }
   public set(key: string, val: V) {
+    if(this.has(key) === false)
     this.keys.push(key);
+
     this.items[key] = val;
   }
   public delete(key: string): boolean {

@@ -1,17 +1,25 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
-@ccclass('LayerItem')
-export class LayerItem extends Component {
+export const LayerConfig = {
+    MaxRank:10
+} 
 
-    private attachedLayer:number = 0;
-    private isDragging:boolean = false;
+@ccclass('CubeLayer')
+export class CubeLayer extends Component {
+
+    private LayerID:number;
+
+    private CellMatrix:Node[][];
     /* class member could be defined like this */
     // dummy = '';
 
     /* use `property` decorator if your want the member to be serializable */
     // @property
     // serializableDummy = 0;
+    onLoad(){
+        this.CellMatrix = new Array<Array<Node>>();
+    }
 
     start () {
         // Your initialization goes here.
@@ -20,23 +28,4 @@ export class LayerItem extends Component {
     // update (deltaTime: number) {
     //     // Your update function goes here.
     // }
-
-    /**单击时，打开对应层的编辑窗口 */
-    onClicked(){
-
-    }
-
-    /**长按时 脱离Layout */
-    onBeginDrag(){
-
-    }
-
-    /**拖拽时 */
-    onDragging(){
-
-    }
-
-    onEndDrag(){
-        
-    }
 }
