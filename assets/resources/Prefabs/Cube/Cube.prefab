@@ -133,14 +133,22 @@
   },
   {
     "__type__": "cc.AnimationComponent",
-    "_name": "",
+    "_name": "Cube<AnimationComponent>",
     "_objFlags": 0,
     "node": {
       "__id__": 1
     },
     "_enabled": true,
     "playOnLoad": false,
-    "_clips": [],
+    "_clips": [
+      {
+        "__uuid__": "b840e18b-6faa-4705-bb74-4301bb322a2c"
+      },
+      {
+        "__uuid__": "adc5c6a3-48c0-44f8-819d-4726f53d256b"
+      },
+      null
+    ],
     "_defaultClip": null,
     "_id": ""
   },

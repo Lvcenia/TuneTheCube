@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, AudioSourceComponent, AnimationComponent, AudioClip, ModelComponent, Color, renderer } from 'cc';
+import { _decorator, Component, Node, AudioSourceComponent, AnimationComponent, AudioClip, ModelComponent, Color, renderer, loader } from 'cc';
 import { CellStatus } from './CellStatus';
+import { AudioManager } from '../Audio/AudioManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('CubeCellComponent')
@@ -32,7 +33,30 @@ export class CubeCellComponent extends Component {
     }
 
     public OnTriggered(){
-        console.log("sss");
+        let clipName = this.cellStatus.NoteName+"-"+this.cellStatus.InstrumentType;
+        let audioClip = AudioManager.GetInstrumentClip(clipName);
+        if(audioClip === null)
+        {
+            loader.loadRes("Audio/Instruments/" + clipName ,AudioClip,  (err, clip:AudioClip)=> {
+                console.log("Cube Dynamic Loading");
+                
+                if(err)
+                {
+                    console.log("动态加载音频出错");
+                    console.log(err);
+                    return;
+                }
+                AudioManager.AudioIndex.set(name,clip);
+                
+                console.log("In audio manager");
+                console.log(clip.name);
+                this.audioSource.clip = clip;
+
+                this.audioSource.play();
+            });
+        }
+        this.audioSource.clip = audioClip;
+        this.audioSource.play();
 
     }
 
@@ -54,6 +78,7 @@ export class CubeCellComponent extends Component {
     }
     /**擦除时 */
     public OnErased(){
+        console.log("in Cube Onerased");
         this.cellStatus.Color = Color.WHITE;
         this.setCellColor(Color.WHITE);
         this.cellStatus.isPainted = false;

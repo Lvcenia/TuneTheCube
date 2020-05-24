@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Color } from 'cc';
 const { ccclass, property } = _decorator;
 
 export const LayerConfig = {
@@ -10,7 +10,11 @@ export class CubeLayer extends Component {
 
     private LayerID:number;
 
-    private CellMatrix:Node[][];
+    private cellMatrix:Node[][];
+
+    private cellColors:Color[][];
+
+    private rank:number = 0;
     /* class member could be defined like this */
     // dummy = '';
 
@@ -18,11 +22,25 @@ export class CubeLayer extends Component {
     // @property
     // serializableDummy = 0;
     onLoad(){
-        this.CellMatrix = new Array<Array<Node>>();
+        this.cellMatrix = new Array<Array<Node>>(LayerConfig.MaxRank);
+        for(let i = 0; i < LayerConfig.MaxRank; i++)
+        {
+            this.cellMatrix[i] = new Array<Node>(LayerConfig.MaxRank);
+        }
+
+        this.cellColors = new Array<Array<Color>>(LayerConfig.MaxRank);
+        for(let i = 0; i < LayerConfig.MaxRank; i++)
+        {
+            this.cellColors[i] = new Array<Color>(LayerConfig.MaxRank);
+        }
     }
 
     start () {
         // Your initialization goes here.
+    }
+
+    SetLayerInfo(ID:number,rank:number){
+
     }
 
     // update (deltaTime: number) {

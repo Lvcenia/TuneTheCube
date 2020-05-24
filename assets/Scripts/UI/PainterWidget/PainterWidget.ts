@@ -7,12 +7,14 @@ import { UIManager, UIPrefabNames } from '../UIFrame/UIManager';
 import { PaintableGrid } from './PaintableGrid';
 import { CubeManager } from '../../NoteCube/CubeManager';
 import { PaletteGrid } from './PaletteGrid';
+import { AutoAdjustMatrixLayout } from './AutoAdjustMatrixLayout';
+import { InstrumentTypes } from '../../Audio/AudioManager';
 const { ccclass, property } = _decorator;
 
 /**绘制模式 可以为方块涂色或者擦除 */
 export enum PaintMode {
-    Paint,
-    Erase
+    Paint = "Paint",
+    Erase = "Erase"
 }
 
 export const PaintMessages = {
@@ -51,25 +53,14 @@ export const PaintMessages = {
 export class PainterWidget extends UIBaseWidget {
 
     /**绘画格子的容器 */
-    @property(LayoutComponent)
-    private gridBoxLayout:LayoutComponent = null;
-
-    @property(Prefab)
-    private gridPrefab:Prefab=null;
+    @property(AutoAdjustMatrixLayout)
+    private gridBoxLayout:AutoAdjustMatrixLayout = null;
 
     private gridsArr:PaintableGrid[][];
 
     /**绘画格子结点的对象池 */
     @property(NodePool)
     private gridNodePool:NodePool = null;
-
-    /**"画笔" 按钮的节点引用 */
-    @property(ButtonComponent)
-    private paintButton:ButtonComponent = null;
-
-    /**"橡皮"按钮的节点引用 */
-    @property(ButtonComponent)
-    private eraseButton:ButtonComponent = null;
 
 
     private currentOctave:number = 4;
@@ -98,7 +89,9 @@ export class PainterWidget extends UIBaseWidget {
     /**当前的Rank */
     private Rank:number = -1;
 
-    private opacityComp:UIOpacityComponent = null;
+
+
+    private currentInst:string = "";
 
     @property
     private gridBoxW:number = 350;
@@ -114,11 +107,12 @@ export class PainterWidget extends UIBaseWidget {
 
     /** */
     onLoad(){
-        this.opacityComp = this.getComponent(UIOpacityComponent);
+        super.onLoad();
         this.initGridsArr();
         MessageManager.getInstance().Register(PaintMessages.OctavedCurScaleUpdated,this.onOctavedCurScaleUpdated,this);
         MessageManager.getInstance().Register(PaintMessages.ChangeRank,this.generateGrids,this);
         MessageManager.getInstance().Register(PaintMessages.PaletteGridClicked,this.onPaletteGridClicked,this);
+        this.currentInst = InstrumentTypes.VibratePhone;
     }
 
     start () {
@@ -166,6 +160,7 @@ export class PainterWidget extends UIBaseWidget {
             }
             this.hasFirstBuild = true;
             this.Rank = rank;
+            this.gridBoxLayout.onRankChanged(rank);
             return;
         }
 
@@ -204,13 +199,15 @@ export class PainterWidget extends UIBaseWidget {
                     }
                     else gridNode = this.gridsArr[x][z].node;
 
-                    gridNode.getComponent(UITransformComponent).setContentSize(this.gridBoxW/(rank),this.gridBoxH/(rank));
+                    //gridNode.getComponent(UITransformComponent).setContentSize(this.gridBoxW/(rank),this.gridBoxH/(rank));
                     this.gridBoxLayout.node.addChild(this.gridsArr[x][z].node);
                 }
             }
 
         
         this.Rank = rank;
+
+        this.gridBoxLayout.onRankChanged(rank);
 
 
         
@@ -220,6 +217,20 @@ export class PainterWidget extends UIBaseWidget {
     testMSG()
     {
         MessageManager.getInstance().Send(PaintMessages.ChangeRank,10);
+    }
+
+    ChangePaintMode(toggle,modeIndex:string){
+        console.log("In ChangepaintMode ");
+        console.log(modeIndex);
+        switch (modeIndex) {
+            case "paint":
+                this.currentMode = PaintMode.Paint;
+                break;
+            case "erase":
+                this.currentMode = PaintMode.Erase;
+                break;
+
+        }
     }
     
 
@@ -266,10 +277,28 @@ export class PainterWidget extends UIBaseWidget {
 
     /**某个格子被点击时由格子调用 返回格子应该变成的颜色 */
     public OnGridClicked(x:number,z:number):Color{
-        MessageManager.getInstance().Send(PaintMessages.PaintCell,new PaintConfig(this.currnetLayerIndex,
-            x,z,this.currentPaintColor,this.currentOctavedScale.Name,this.currentNote));
+        switch (this.currentMode) {
+            case PaintMode.Erase:
+                MessageManager.getInstance().Send(PaintMessages.EraseCell,new PaintConfig(this.currnetLayerIndex,
+                    x,z,Color.WHITE,"","",this.currentInst));
+                return Color.WHITE;
+                    break;
+                    
+            case PaintMode.Paint:
+                MessageManager.getInstance().Send(PaintMessages.PaintCell,new PaintConfig(this.currnetLayerIndex,
+                    x,z,this.currentPaintColor,this.currentOctavedScale.Name,this.currentNote,this.currentInst));
+        
+                    return this.currentPaintColor;
+                break;
+            
 
-            return this.currentPaintColor;
+                
+        
+            default:
+                break;
+        }
+
+
 
     }
 
@@ -279,10 +308,31 @@ export class PainterWidget extends UIBaseWidget {
         this.currentPaintColor = color;
     }
 
+    onChangeInstrument(instIndex:number){
+        switch (instIndex) {
+            case 0:
+                this.currentInst = InstrumentTypes.VibratePhone;
+                
+                break;
+            case 1:
+                this.currentInst = InstrumentTypes.Guitar;
+                
+                break;
+            case 2:
+                
+            break;
+        
+            default:
+                break;
+        }
+    }
+
     Hide(){
-        this.opacityComp.opacity = 0;
+        super.Hide();
+        //this.opacityComp.opacity = 0;
     }
     Show(){
-        this.opacityComp.opacity = 255;
+        super.Show();
+        //this.opacityComp.opacity = 255;
     }
 }

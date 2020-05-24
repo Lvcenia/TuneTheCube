@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, AnimationComponent } from 'cc';
+import { _decorator, Component, Node, AnimationComponent, LabelComponent, UIOpacityComponent } from 'cc';
 const { ccclass, property } = _decorator;
 
 export enum UIWidgetBehaviour {
@@ -14,9 +14,17 @@ export enum UIWidgetBehaviour {
 export class UIBaseWidget extends Component {
     
     protected WidgetBehaviour:UIWidgetBehaviour;
-    protected WidgetTite:string;
-    protected PrefabName:string;
-    protected Anim:AnimationComponent;
+    
+    @property
+    protected WidgetTite:string = "";
+    protected PrefabName:string = "";
+
+    protected Anim:AnimationComponent = null;
+
+    @property(LabelComponent)
+    protected WindowTileLabel = null;
+
+    protected opacityComp:UIOpacityComponent = null;
     /* class member could be defined like this */
     // dummy = '';
 
@@ -24,8 +32,9 @@ export class UIBaseWidget extends Component {
     // @property
     // serializableDummy = 0;
 
-    start () {
+    onLoad() {
         this.Anim = this.getComponent(AnimationComponent);
+        this.opacityComp = this.getComponent(UIOpacityComponent);
     }
 
     // update (deltaTime: number) {
@@ -33,11 +42,14 @@ export class UIBaseWidget extends Component {
     // }
     /**窗口显示函数 */
     Show(){
+        this.Anim.play("UIshow");
 
     }
 
     /**窗口隐藏函数 */
     Hide(){
+        //this.Anim.play("WidgetHide");
+        this.Anim.play("UIhide");
 
     }
 }

@@ -41,7 +41,7 @@ export class PaintableGrid extends Component {
     }
 
     onTouchMove(){
-        console.log("TOUCH MOVING");
+        //console.log("TOUCH MOVING");
         if(this.painterWidget.GetCurrentMode() === PaintMode.Paint)
         this.paintSelf();
         else this.eraseSelf();
@@ -59,7 +59,7 @@ export class PaintableGrid extends Component {
     //     // Your update function goes here.
     // }
     onClicked(){
-        console.log("TOUCH START");
+        //console.log("TOUCH START");
         if(this.painterWidget.GetCurrentMode() === PaintMode.Paint)
         this.paintSelf();
         else this.eraseSelf();
@@ -67,16 +67,14 @@ export class PaintableGrid extends Component {
     }
 
     paintSelf(){
-        if(this.isPainted === false){
             this.displayColor = this.painterWidget.OnGridClicked(this.X,this.Z);
             this.sprite.color  = this.displayColor;
             this.isPainted = true;
-        }
     }
 
     eraseSelf(){
         if(this.isPainted === true){
-            this.displayColor = Color.WHITE;
+            this.displayColor = this.painterWidget.OnGridClicked(this.X,this.Z);
             this.sprite.color  = this.displayColor;
             this.isPainted = false;
         }

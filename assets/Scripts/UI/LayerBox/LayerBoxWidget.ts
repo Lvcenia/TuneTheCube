@@ -22,4 +22,11 @@ export class LayerBoxWidget extends UIBaseWidget {
     // update (deltaTime: number) {
     //     // Your update function goes here.
     // }
+    public AddLayer(){
+
+    }
+
+    public DeleteLayer(){
+        
+    }
 }

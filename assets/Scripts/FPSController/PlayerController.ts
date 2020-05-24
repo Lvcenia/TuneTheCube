@@ -6,7 +6,7 @@ export class PlayerController extends Component {
 
     private audioSource:AudioSourceComponent = null;
 
-    private 
+
     /* class member could be defined like this */
     // dummy = '';
 

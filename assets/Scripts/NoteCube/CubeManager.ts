@@ -4,6 +4,7 @@ import { Painter } from '../Painting/Painter';
 import { PaintConfig } from '../Painting/PaintConfig';
 import { MessageManager } from '../MessageSystem/MessageManager';
 import { PaintMessages } from '../UI/PainterWidget/PainterWidget';
+import { CubeLayer } from './CubeLayer';
 const { ccclass, property } = _decorator;
 
 /**所有子方块的父节点，在生成时位于整个大方块的左下角 
@@ -48,6 +49,7 @@ export class CubeManager extends Component {
     @property
     intervalFactor:number = 0.01;
 
+    Layers:CubeLayer[] = [];
 
     cubeCellNodes:Node[][][]; //= new Array<Array<Array<Node>>>();
 
@@ -303,6 +305,14 @@ export class CubeManager extends Component {
     public RemoveCell(cell:Node){
         this.cellNodePool.put(cell);
        
+    }
+
+    public AddCubeLayer(){
+
+    }
+
+    public RemoveCubeLayer(){
+        
     }
 
 
