@@ -1,6 +1,8 @@
-import { _decorator, Component, Node, AudioSourceComponent, AnimationComponent, AudioClip, ModelComponent, Color, renderer, loader } from 'cc';
+import { _decorator, Component, Node, AudioSourceComponent, AnimationComponent, AudioClip, ModelComponent, Color, renderer, loader, BoxColliderComponent, ITriggerEvent } from 'cc';
 import { CellStatus } from './CellStatus';
 import { AudioManager } from '../Audio/AudioManager';
+import { NoteNameConvert } from '../Musicals/Musicals';
+import { MessageManager } from '../MessageSystem/MessageManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('CubeCellComponent')
@@ -19,6 +21,8 @@ export class CubeCellComponent extends Component {
 
     private renderPass:renderer.Pass = null;
 
+    private collider:BoxColliderComponent = null;
+
     onLoad(){
         
     }
@@ -28,12 +32,34 @@ export class CubeCellComponent extends Component {
         this.anim = this.getComponent(AnimationComponent);
         this.modelComponent = this.getComponent(ModelComponent);
         this.renderPass =  this.modelComponent.material.passes[0];
-        this.colorRenderHandle = this.renderPass.getHandle('emissive');
+        this.colorRenderHandle = this.renderPass.getHandle('albedo');
+        this.collider = this.getComponent(BoxColliderComponent);
+        this.collider.on('onTriggerEnter',this.onTriggerEnter,this);
+
+    }
+    onTriggerEnter(event: ITriggerEvent){
+        if(this.cellStatus.isPainted)
+        {
+            this.OnTriggered();
+        }
 
     }
 
     public OnTriggered(){
-        let clipName = this.cellStatus.NoteName+"-"+this.cellStatus.InstrumentType;
+        let notenameReal = this.cellStatus.NoteName;
+
+        
+
+        //有降号 转升号
+        if(notenameReal.indexOf("b")!== -1)
+        notenameReal.replace(notenameReal.slice(0,2),NoteNameConvert[notenameReal.slice(0,2)]);
+
+        //升号转s
+        notenameReal.replace('#','s');
+        
+        let clipName = notenameReal+"-"+"guitar";
+        console.log("ClipName: " + clipName);
+        
         let audioClip = AudioManager.GetInstrumentClip(clipName);
         if(audioClip === null)
         {
@@ -52,11 +78,21 @@ export class CubeCellComponent extends Component {
                 console.log(clip.name);
                 this.audioSource.clip = clip;
 
-                this.audioSource.play();
+                let s = <any>this.audioSource.clip;
+                MessageManager.getInstance().Send("AudioPlay",s._audio);
+                this.anim.play("CubeTriggerred");
             });
         }
-        this.audioSource.clip = audioClip;
-        this.audioSource.play();
+        else {
+            this.audioSource.clip = audioClip;
+            let s = <any>this.audioSource.clip;
+            //this.audioSource.play();
+            console.log("In Cell",this.cellStatus);
+            
+            MessageManager.getInstance().Send("AudioPlay",s._audio);
+            this.anim.play("CubeTriggerred");
+        }
+
 
     }
 

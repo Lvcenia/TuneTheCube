@@ -98,6 +98,8 @@ export class PainterWidget extends UIBaseWidget {
     @property
     private gridBoxH:number = 350;
 
+    
+
     /* class member could be defined like this */
     // dummy = '';
 
@@ -119,7 +121,7 @@ export class PainterWidget extends UIBaseWidget {
         // Your initialization goes here.
         
         this.gridNodePool = UIManager.getInstance().GetWidgetPool(UIPrefabNames.PaintableGrid);
-        this.generateGrids(9);
+        //this.generateGrids(9);
     }
 
     // update (deltaTime: number) {
@@ -141,6 +143,8 @@ export class PainterWidget extends UIBaseWidget {
     }
 
     private generateGrids(rank:number){
+        console.log("In generate Grids: " ,this.hasFirstBuild);
+        
         if(this.hasFirstBuild === false)
         {
             for(let z = 0 ; z< rank; z++){
@@ -159,6 +163,7 @@ export class PainterWidget extends UIBaseWidget {
                 }
             }
             this.hasFirstBuild = true;
+            console.log("In generate Grids After change: " ,this.hasFirstBuild);
             this.Rank = rank;
             this.gridBoxLayout.onRankChanged(rank);
             return;
@@ -209,14 +214,6 @@ export class PainterWidget extends UIBaseWidget {
 
         this.gridBoxLayout.onRankChanged(rank);
 
-
-        
-
-    }
-
-    testMSG()
-    {
-        MessageManager.getInstance().Send(PaintMessages.ChangeRank,10);
     }
 
     ChangePaintMode(toggle,modeIndex:string){
@@ -245,12 +242,14 @@ export class PainterWidget extends UIBaseWidget {
 
     //给增加一个八度的按钮调用的接口
     public OctavePlusOne(){
+        if(this.currentOctave <= 7)
         this.switchOctave(this.currentOctave+1);
 
     }
 
     //给减少一个八度的按钮调用的接口
     public OctaveMinusOne(){
+        if(this.currentOctave > 0)
         this.switchOctave(this.currentOctave-1);
     }
 
@@ -260,17 +259,19 @@ export class PainterWidget extends UIBaseWidget {
         this.currentNote = this.currentOctavedScale.Notes[0];
         this.currentPaintColor = this.currentOctavedScale.ScaleNoteColorDictionary.get(this.currentNote);
         let notes = this.currentOctavedScale.Notes;
-        for(let i = 0; i <notes.length; i++)
-        {
-            console.log(this.currentOctavedScale.ScaleNoteColorDictionary.get(this.currentOctavedScale.Notes[i]).toHEX("#rrggbbaa"));
+        // for(let i = 0; i <notes.length; i++)
+        // {
+
+        //    //console.log(this.currentOctavedScale.ScaleNoteColorDictionary.get(this.currentOctavedScale.Notes[i]).toHEX("#rrggbbaa"));
             
-        }
+        // }
         
         
         
     }
 
     private switchOctave(toOctave:number){
+        this.currentOctave = toOctave;
         MessageManager.getInstance().Send(PaintMessages.SwitchOctave,toOctave);
 
     }

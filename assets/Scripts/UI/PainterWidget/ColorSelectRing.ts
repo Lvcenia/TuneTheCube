@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec2, math, Vec3, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Vec2, math, Vec3, Prefab, instantiate, LabelComponent } from 'cc';
 import { MessageManager } from '../../MessageSystem/MessageManager';
 import { PaintMessages } from './PainterWidget';
 import { NoteScale } from '../../Musicals/Musicals';
@@ -16,6 +16,11 @@ export class ColorSelectRing extends Component {
 
    @property([PaletteGrid])
     private paletteGrids:PaletteGrid[] = new Array<PaletteGrid>(12);
+
+    private dontShow:number[] = [];
+
+    @property(LabelComponent)
+    ScaleNameLabel:LabelComponent = null;
 
     /* class member could be defined like this */
     // dummy = '';
@@ -41,9 +46,15 @@ export class ColorSelectRing extends Component {
     onScaleChanged(scale:NoteScale)
     {
         let notes = scale.Notes;
-
+        this.ScaleNameLabel.string = scale.Name;
+        this.dontShow = [];
         for(let i = 0; i < notes.length; i++)
         {
+            if(notes[i] === "NoExistence")
+            {
+                this.dontShow.push(i);
+                continue;
+            }
             this.paletteGrids[i].updateNoteInfo(notes[i],scale.ScaleNoteColorDictionary.get(notes[i]));
         }
         this.RearrangeChildPosition(notes.length);
@@ -56,9 +67,15 @@ export class ColorSelectRing extends Component {
     public RearrangeChildPosition(childNum:number){
        
        console.log("in colorRing Rearranging " + childNum);
+
+
        for(let i = 0; i< childNum; i++){
+           if(this.dontShow.indexOf(i) === -1)
+           {
             this.paletteGrids[i].node.active = true;
             this.paletteGrids[i].node.setPosition(this.calcChildPosition(i,childNum));
+           } else this.paletteGrids[i].node.active = false;
+
        }
 
        for(let i = childNum; i < 12; i++){

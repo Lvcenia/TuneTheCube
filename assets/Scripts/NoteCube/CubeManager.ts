@@ -62,13 +62,15 @@ export class CubeManager extends Component {
 
     
 
-    // onLoad () {}
+    onLoad () {
+        MessageManager.getInstance().Register(PaintMessages.ChangeRank,this.BuildCellArrWithRank,this);
+    }
 
     start () {
-        MessageManager.getInstance().Register(PaintMessages.ChangeRank,this.BuildCellArrWithRank,this);
+        
         this.BuildPoolandArrs();
         //this.GenerateCells(this.Rank);
-        this.BuildCellArrWithRank(this.Rank);
+        //this.BuildCellArrWithRank(this.Rank);
         
     }
 

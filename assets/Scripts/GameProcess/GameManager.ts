@@ -25,7 +25,7 @@ export class GameManager extends Component {
     private firstAutoShow:boolean = false;
     start () {
         // Your initialization goes here.
-        this.ChangeRank(8);
+ 
     }
 
     update(dt:number){
@@ -41,8 +41,5 @@ export class GameManager extends Component {
     // update (deltaTime: number) {
     //     // Your update function goes here.
     // }
-    ChangeRank(newRank:number){
-        MessageManager.getInstance().Send(PaintMessages.ChangeRank,newRank);
-        // MessageManager.send
-    }
+
 }

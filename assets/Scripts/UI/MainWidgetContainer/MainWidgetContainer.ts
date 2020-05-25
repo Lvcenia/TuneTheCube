@@ -16,6 +16,8 @@ export class MainWidgetContainer extends UIBaseWidget {
 
     private currentPage:string = PageType.Paint;
 
+    private isOpend:boolean = false;
+
     @property([Node])
     private widgets:Node[] = new Array<Node>();
 
@@ -42,10 +44,22 @@ export class MainWidgetContainer extends UIBaseWidget {
 
             if(i == pageIndex)
             {
-                widget.active = true;
+                widget.setPosition(0,0,0);
             }
-            else widget.active = false;
+            else widget.setPosition(800,0,0);
         }
-        super.Show();
+        if(this.isOpend ===  false)
+        {
+            super.Show();
+            this.isOpend = true;
+
+        }
+        
+    }
+
+    Hide(){
+        super.Hide();
+        this.isOpend = false;
+
     }
 }

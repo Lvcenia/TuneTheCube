@@ -10,7 +10,9 @@
   "_defines": [
     {
       "USE_INSTANCING": true,
-      "USE_BATCHING": true
+      "USE_BATCHING": true,
+      "USE_ALBEDO_MAP": true,
+      "USE_EMISSIVE_MAP": true
     }
   ],
   "_states": [
@@ -26,15 +28,16 @@
   ],
   "_props": [
     {
+      "roughness": 11.8,
       "emissive": {
         "__type__": "cc.Color",
         "r": 255,
-        "g": 190,
-        "b": 190,
-        "a": 0
+        "g": 255,
+        "b": 255,
+        "a": 255
       },
       "mainTexture": {
-        "__uuid__": "8b51ebe1-6fce-4821-874f-2c96f218e63b@6c48a"
+        "__uuid__": "135a1fef-93ff-457e-92ea-ee758cb1684f@6c48a"
       },
       "emissiveMap": {
         "__uuid__": "8b51ebe1-6fce-4821-874f-2c96f218e63b@6c48a"

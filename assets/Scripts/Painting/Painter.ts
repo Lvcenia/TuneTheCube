@@ -1,7 +1,7 @@
 import { _decorator, Component, Node ,Color, color} from 'cc';
 import { Dictionary } from '../Generics/XDictionary';
 import { CubeManager } from '../NoteCube/CubeManager';
-import { Notes, NoteScale } from '../Musicals/Musicals';
+import { Notes, NoteScale, NoteNameConvert } from '../Musicals/Musicals';
 import { PaintConfig } from './PaintConfig';
 import { MessageManager } from '../MessageSystem/MessageManager';
 import { PaintMessages as PaintMessages } from '../UI/PainterWidget/PainterWidget';
@@ -50,19 +50,23 @@ export class Painter extends Component {
 
     private currentOctave:number = 4;
 
-    
-    start(){
+    onLoad(){
         Painter._instance = this;
         console.log("初始化Painter");
         this.ScaleListDictionary = new Dictionary<NoteScale>();
         this.NoteColorsDictionary = new Dictionary<Color>();
+        MessageManager.getInstance().Register(PaintMessages.PaintCell,this.PaintCell,this);
+        MessageManager.getInstance().Register(PaintMessages.EraseCell,this.EraseCell,this);
+        MessageManager.getInstance().Register(PaintMessages.SwitchOctave,this.OnSwitchOctave,this);
+    }
+    
+    start(){
+
         this.initNoteColors();
         this.initScales();
         this.initColorArr();
         //初始定在C大调
-        this.OnSwitchScale("C大调");
-        MessageManager.getInstance().Register(PaintMessages.PaintCell,this.PaintCell,this);
-        MessageManager.getInstance().Register(PaintMessages.EraseCell,this.EraseCell,this);
+        this.currentScale = this.ScaleListDictionary.get("半音音阶");
         this.EmitUpdateScaleMsg();
         
     }
@@ -83,14 +87,46 @@ export class Painter extends Component {
     /**返回实际用于绘画的、包含八度的音调颜色信息 */
     public GetCurrentScaleOctaved():NoteScale{
         let currentScaleOctaved:NoteScale = NoteScale.Copy(this.currentScale);
+
+        console.log("before ",this.currentScale);
+        console.log("Copy: ",currentScaleOctaved);
+        
+        let isNoteExist:boolean = true;
+        
       
         for(let i = 0;i < currentScaleOctaved.Notes.length; i++)
         {
-            let notename = currentScaleOctaved.Notes[i];
-            currentScaleOctaved.ScaleNoteColorDictionary.set(notename + this.currentOctave.toString(),
-                this.getColorOctaved(currentScaleOctaved.ScaleNoteColorDictionary.get(notename),this.currentOctave));
+            let notename = this.currentScale.Notes[i];
+            console.log(notename);
+            
+            if(this.currentOctave == 0)
+            {
+                if(notename !== "A" && notename !== "A#" && notename != "Bb" &&notename !== "B")
+                {
+                    isNoteExist = false;
+                    currentScaleOctaved.Notes[i] = 'NoExistence';
+                }
+            }
+
+            if(this.currentOctave == 8)
+            {
+                if(notename !== "C")
+                {
+                    isNoteExist = false;
+                    currentScaleOctaved.Notes[i] = 'NoExistence';
+                }
+            }
+
+            if(isNoteExist)
+            {
+                currentScaleOctaved.ScaleNoteColorDictionary.set(notename + this.currentOctave.toString(),
+                this.getColorOctaved(this.currentScale.ScaleNoteColorDictionary.get(notename),this.currentOctave));
             currentScaleOctaved.Notes[i] = notename + this.currentOctave.toString();
+            }
+
             } 
+        
+        console.log("after ",this.currentScale);
         return currentScaleOctaved;
 
     }
@@ -129,13 +165,6 @@ export class Painter extends Component {
         
     }
 
-    public testSetColor(){
-        this.OnSwitchScale("C大调");
-        console.log(JSON.stringify(this.currentScale));
-        let s = new PaintConfig(1,4,9,this.GetCurrentScaleOctaved().ScaleNoteColorDictionary.get(this.currentScale.Notes[2]),
-        this.currentScale.Name,this.currentScale.Notes[0]);
-        this.cubeManager.OnCellPainted(s);
-    }
 
     /**前端擦除一个方块的颜色时调用，通知CubeManager擦掉一个方块的颜色 同时将对应位置的颜色换为白色*/
     public EraseCell(config:PaintConfig){
@@ -160,6 +189,7 @@ export class Painter extends Component {
     private initScales(){
         //插入调信息
         this.SetKeyScale("C大调",["C","D","E","F","G","A","B"]);
+        this.SetKeyScale("半音音阶",["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]);
 
 
         //生成调内颜色
@@ -204,6 +234,12 @@ export class Painter extends Component {
 
     /**计算两个音之间的距离（半音数） */
     private calcNoteDistance(note1:string,note2:string):number{
+        //如果是带降号的 转成升号再比
+        if(note1.indexOf("b") !== -1)
+        note1 = NoteNameConvert[note1];
+        if(note2.indexOf("b") !== -1)
+        note2 = NoteNameConvert[note2];
+
         return Math.abs(this.NotesArr.indexOf(note1) - this.NotesArr.indexOf(note2));
     }
 

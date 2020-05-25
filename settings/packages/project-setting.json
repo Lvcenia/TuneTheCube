@@ -3,6 +3,10 @@
     {
       "name": "Cube",
       "value": 1
+    },
+    {
+      "name": "CubeTrigger",
+      "value": 2
     }
   ],
   "general": {
