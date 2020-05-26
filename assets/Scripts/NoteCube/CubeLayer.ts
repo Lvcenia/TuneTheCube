@@ -2,6 +2,9 @@ import { _decorator, Component, Node, Color, Vec3, NodePool, v3, instantiate } f
 import { CubeCellComponent } from './CubeCellComponent';
 import { CubeManager } from './CubeManager';
 import { MessageManager } from '../MessageSystem/MessageManager';
+import { PaintMessages } from '../UI/PainterWidget/PainterWidget';
+import { CellStatus } from './CellStatus';
+import { AudioMessages } from '../Triggers/TriggerManager';
 const { ccclass, property } = _decorator;
 
 export const LayerConfig = {
@@ -19,6 +22,8 @@ export class CubeLayer extends Component {
 
     private cellColors:Color[][];
 
+    private cellStatusArr:CellStatus[][];
+
     private rank:number = 0;
 
     public intervalFactor:number = 1;
@@ -33,7 +38,7 @@ export class CubeLayer extends Component {
     // @property
     // serializableDummy = 0;
     onLoad(){
-        MessageManager.getInstance().Register("SelectLayer",this.OnLayerSelected,this);
+        MessageManager.getInstance().Register(PaintMessages.SwitchLayer,this.OnLayerSelected,this);
         
     }
 
@@ -61,6 +66,11 @@ export class CubeLayer extends Component {
         for(let i = 0; i < LayerConfig.MaxRank; i++)
         {
             this.cellColors[i] = new Array<Color>(LayerConfig.MaxRank);
+        }
+        this.cellStatusArr = new Array<Array<CellStatus>>(LayerConfig.MaxRank);
+        for(let i = 0; i < LayerConfig.MaxRank; i++)
+        {
+            this.cellStatusArr[i] = new Array<CellStatus>(LayerConfig.MaxRank);
         }
     }
 
@@ -102,6 +112,7 @@ export class CubeLayer extends Component {
                 //记录组件和颜色引用
                 this.cellMatrix[x][z] = cellCmp;
                 this.cellColors[x][z] = cellCmp.cellStatus.Color;
+                this.cellStatusArr[x][z] = cellCmp.cellStatus;
 
                 //添加子节点 修改位置
                 this.ArrangeCellPosition(cellNode,instancePosition);
@@ -163,6 +174,7 @@ export class CubeLayer extends Component {
                         if(x >= newRank  || z >= newRank )
                         {
                             CubeManager.getInstance().RemoveCell(Cell);
+                            this.cellStatusArr[x][z] = null;
                             this.cellColors[x][z] = Color.WHITE;
                             this.cellMatrix[x][z] = null;
                         }
@@ -198,6 +210,7 @@ export class CubeLayer extends Component {
                             newCell = CubeManager.getInstance().getCellNode();
                             cellCmp = newCell.getComponent(CubeCellComponent);
                             this.cellMatrix[x][z] = cellCmp;
+                            this.cellStatusArr[x][z] = cellCmp.cellStatus;
 
                         } else {
                             
@@ -234,10 +247,50 @@ export class CubeLayer extends Component {
 
     OnLayerSelected(LayerIndex:number){
         if (this.LayerIndex === LayerIndex){
-            this.node.setPosition(150,this.node.position.y,this.node.position.z);
+            this.node.setPosition(1.5,this.node.position.y,this.node.position.z);
+            CubeManager.getInstance().currentLayerIndex = this.LayerIndex;
+            MessageManager.getInstance().Send(PaintMessages.LayerSwitched,this.LayerIndex,this.cellStatusArr);
+            //this.node.setRotation(0,45,0,0);
         } 
         else {
             this.node.setPosition(0,this.node.position.y,this.node.position.z);
+            this.node.setRotation(0,0,0,0);
         }
     }
+
+    PlayLayerAudios(deltaTime:number){
+
+        let x = 0;
+        let z = 0;
+        let isInited:boolean = false;
+
+        
+        let playList:CubeCellComponent[] = [];
+
+        for(let x = 0;x <this.rank; x++)
+        {
+            for (let z = 0; z <this.rank;z++)
+            {
+                    playList.push(this.cellMatrix[x][z]);
+            }
+        }
+
+        let i = 0;
+        if(playList.length === 0) return;
+
+        let ID = setInterval(()=> {
+            playList[i].OnTriggered();
+            i++;
+
+            if(i >= playList.length)
+            {
+                MessageManager.getInstance().Send(AudioMessages.LayerPlayEnded,this.LayerIndex);
+                clearInterval(ID);
+            }
+        },deltaTime);
+
+
+    }
+
+ 
 }

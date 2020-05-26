@@ -61,13 +61,20 @@ export class PaintableGrid extends Component {
     onClicked(){
         //console.log("TOUCH START");
         if(this.painterWidget.GetCurrentMode() === PaintMode.Paint)
-        this.paintSelf();
+        {
+            this.displayColor = this.painterWidget.OnGridClicked(this.X,this.Z);
+            this.paintSelf()
+        }
         else this.eraseSelf();
 
     }
 
+    UpdateColor(color:Color){
+        this.displayColor = color;
+        this.paintSelf();
+    }
+
     paintSelf(){
-            this.displayColor = this.painterWidget.OnGridClicked(this.X,this.Z);
             this.sprite.color  = this.displayColor;
             this.isPainted = true;
     }

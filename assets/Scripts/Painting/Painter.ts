@@ -66,7 +66,7 @@ export class Painter extends Component {
         this.initScales();
         this.initColorArr();
         //初始定在C大调
-        this.currentScale = this.ScaleListDictionary.get("半音音阶");
+        this.currentScale = this.ScaleListDictionary.get("五声音阶");
         this.EmitUpdateScaleMsg();
         
     }
@@ -169,7 +169,6 @@ export class Painter extends Component {
         this.storedCellColors[config.Layer][config.X][config.Z] = Color.WHITE;
         this.cubeManager.OnCellErased(config);
 
-
     }
 
     /** 为一个音设置主音颜色*/
@@ -186,7 +185,9 @@ export class Painter extends Component {
     private initScales(){
         //插入调信息
         this.SetKeyScale("C大调",["C","D","E","F","G","A","B"]);
+        this.SetKeyScale("A旋律小调",["A","B","C","D","E","F#","G#"]);
         this.SetKeyScale("半音音阶",["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]);
+        this.SetKeyScale("五声音阶",["C","D","E","G","A"]);
 
 
         //生成调内颜色
@@ -247,7 +248,7 @@ export class Painter extends Component {
     */
     private getNonKeynoteColor(baseNote:string,targetNote:string):Color{
         //允许的色相偏移范围
-        let hRrange = 0.14;
+        let hRrange = 0.6;
         let distance = this.calcNoteDistance(baseNote,targetNote);
         let baseColor = this.NoteColorsDictionary.get(baseNote);
         let targetColor = new cc.Color();
@@ -281,11 +282,11 @@ export class Painter extends Component {
 
     private getColorOctaved(color:Color,octave:number):Color{
         let colorH = color.toHSV().h;
-        let baseColorS = 0.45;
-        let baseColorV = 0.45;
+        let baseColorS = 0.44;
+        let baseColorV = 0.84;
 
         let resColor = new Color();
-        resColor = resColor.fromHSV(colorH,baseColorS + 0.2*octave,baseColorV + 0.2*baseColorV);
+        resColor = resColor.fromHSV(colorH,baseColorS + 0.07*octave,baseColorV + 0.02*baseColorV);
         return resColor;
 
 

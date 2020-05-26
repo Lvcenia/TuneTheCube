@@ -5,6 +5,7 @@ import { PaintConfig } from '../Painting/PaintConfig';
 import { MessageManager } from '../MessageSystem/MessageManager';
 import { PaintMessages } from '../UI/PainterWidget/PainterWidget';
 import { CubeLayer, CellNodePool } from './CubeLayer';
+import { AudioMessages, TriggerManager } from '../Triggers/TriggerManager';
 const { ccclass, property } = _decorator;
 
 /**所有子方块的父节点，在生成时位于整个大方块的左下角 
@@ -76,6 +77,8 @@ export class CubeManager extends Component {
     onLoad () {
         CubeManager.instance = this;
         MessageManager.getInstance().Register(PaintMessages.ChangeRank,this.BuildCellArrWithRank,this);
+        MessageManager.getInstance().Register(AudioMessages.StartPlaySequence,this.OnStartPlaySequence,this);
+        MessageManager.getInstance().Register(AudioMessages.LayerPlayEnded,this.OnLayerPlayEnded,this);
         
     }
 
@@ -209,6 +212,12 @@ export class CubeManager extends Component {
     }
 
     public RemoveCubeLayer(layerIndex:number){
+        if(this.Layers.length <= 1)
+        {
+            console.log("不能再删了哦");
+            return;
+            
+        }
 
         console.log("正在移除",layerIndex,"总数",this.currentLayerNumber,"长度",this.Layers.length);
         
@@ -231,6 +240,28 @@ export class CubeManager extends Component {
             this.Layers[i].LayerIndex = i;
         }
     }
+
+    OnStartPlaySequence(){
+        let y = 0;
+        if(this.Layers[0])
+        {
+            this.Layers[0].PlayLayerAudios(TriggerManager.getInstance().SequenceInterval);
+        }
+       
+    }
+
+    OnLayerPlayEnded(endedLayer:number){
+        if(endedLayer < this.Layers.length - 1)
+        {
+            if(this.Layers[endedLayer + 1])
+            this.Layers[endedLayer + 1].PlayLayerAudios(TriggerManager.getInstance().SequenceInterval);
+        }
+        else {
+            setTimeout(()=>this.OnStartPlaySequence(), 800);
+            
+        }
+    }
+        
 
 
 }

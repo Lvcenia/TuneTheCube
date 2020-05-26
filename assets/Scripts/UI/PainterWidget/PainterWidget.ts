@@ -6,9 +6,9 @@ import { PaintConfig } from '../../Painting/PaintConfig';
 import { UIManager, UIPrefabNames } from '../UIFrame/UIManager';
 import { PaintableGrid } from './PaintableGrid';
 import { CubeManager } from '../../NoteCube/CubeManager';
-import { PaletteGrid } from './PaletteGrid';
 import { AutoAdjustMatrixLayout } from './AutoAdjustMatrixLayout';
 import { InstrumentTypes } from '../../Audio/AudioManager';
+import { CellStatus } from '../../NoteCube/CellStatus';
 const { ccclass, property } = _decorator;
 
 /**绘制模式 可以为方块涂色或者擦除 */
@@ -28,6 +28,7 @@ export const PaintMessages = {
 
 
     //UI向后端的
+    SwitchLayer:"SwitchLayer",
     ToNextLayer: "ToNextLayer",
     ToLastLayer :"ToLastLayer",
     SwitchScale : "SwitchScale",
@@ -35,6 +36,9 @@ export const PaintMessages = {
     PaintCell :"GridPainted",
     EraseCell: "GridErased",
     SwitchOctave:"SwitchOctave",
+
+    AddLayer:"AddLayer",
+    RemoveLayer:"RemoveLayer",
 
 
 
@@ -46,6 +50,10 @@ export const PaintMessages = {
 
     //后端向UI的
     OctavedCurScaleUpdated:"OctavedCurScaleUpdated",
+    LayerSwitched:"LayerSwitched",
+
+    LayerAdded:"LayerAdded",
+    LayerRemoved:"LayerRemoved"
 
 }
 
@@ -114,6 +122,8 @@ export class PainterWidget extends UIBaseWidget {
         MessageManager.getInstance().Register(PaintMessages.OctavedCurScaleUpdated,this.onOctavedCurScaleUpdated,this);
         MessageManager.getInstance().Register(PaintMessages.ChangeRank,this.generateGrids,this);
         MessageManager.getInstance().Register(PaintMessages.PaletteGridClicked,this.onPaletteGridClicked,this);
+        MessageManager.getInstance().Register(PaintMessages.LayerSwitched,this.OnLayerSwitched,this);
+        //MessageManager.getInstance().Register(PaintMessages.LayerAdded,this.on,this);
         this.currentInst = InstrumentTypes.VibratePhone;
     }
 
@@ -231,8 +241,19 @@ export class PainterWidget extends UIBaseWidget {
     }
     
 
-    /**切换当前绘制层的时候 要切换Grids的显示颜色 */
-    private OnSwitchLayer(toLayer:number){
+    /**图层切换后 更新前端的颜色显示和图层序号 */
+    private OnLayerSwitched(toLayer:number,cellStats:CellStatus[][])
+    {
+        this.currnetLayerIndex = toLayer;
+        for(let z = 0 ; z< this.Rank; z++){
+            for(let x = 0; x < this.Rank; x++)
+            {
+
+                let cmp:PaintableGrid = this.gridsArr[x][z];
+                cmp.UpdateColor(cellStats[x][z].Color);
+                
+            }
+        }
 
     }
 
@@ -303,6 +324,20 @@ export class PainterWidget extends UIBaseWidget {
 
     }
 
+    PrePaint(){
+        let i = 0;
+        for(let x = 0; x <this.Rank;x++)
+        {
+            for(let z = 0; x<this.Rank;z++)
+            {
+                this.currentPaintColor = this.currentOctavedScale.ScaleNoteColorDictionary.get(this.currentOctavedScale.Notes[i]);
+                i++;
+                if(i >= this.currentOctavedScale.Notes.length) i = 0;
+                this.gridsArr[x][z].onClicked();
+            }
+        }
+    }
+
     onPaletteGridClicked(notename:string,color:Color){
         console.log("In Change Color Callback " + notename,color.toHEX("#rrggbb"));
         this.currentNote = notename;
@@ -335,5 +370,9 @@ export class PainterWidget extends UIBaseWidget {
     Show(){
         super.Show();
         //this.opacityComp.opacity = 255;
+    }
+
+    AddLayerRequest(){
+
     }
 }

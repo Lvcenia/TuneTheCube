@@ -46,27 +46,25 @@ export class CubeCellComponent extends Component {
     }
 
     public OnTriggered(){
-        let notenameReal = this.cellStatus.NoteName;
+        if(this.cellStatus.isPainted === false)
+        return;
 
-        
+        let notenameReal = this.cellStatus.NoteName;
 
         //有降号 转升号
         if(notenameReal.indexOf("b")!== -1)
         notenameReal.replace(notenameReal.slice(0,2),NoteNameConvert[notenameReal.slice(0,2)]);
 
         //升号转s
-        console.log("ClipName before: " + notenameReal);
         notenameReal = notenameReal.replace("#","s");
         
         let clipName = notenameReal+"-"+"guitar";
-        console.log("ClipName After: " + clipName);
         
         let audioClip = AudioManager.GetInstrumentClip(clipName);
+        this.anim.play("CubeTriggerred");
         if(audioClip === null)
         {
-            loader.loadRes("Audio/Instruments/" + clipName ,AudioClip,  (err, clip:AudioClip)=> {
-                console.log("Cube Dynamic Loading");
-                
+            loader.loadRes("Audio/Instruments/" + clipName ,AudioClip,  (err, clip:AudioClip)=> {            
                 if(err)
                 {
                     console.log("动态加载音频出错");
@@ -74,8 +72,7 @@ export class CubeCellComponent extends Component {
                     return;
                 }
                 AudioManager.AudioIndex.set(name,clip);
-                
-                console.log("In audio manager");
+
                 console.log(clip.name);
                 this.audioSource.clip = clip;
 
@@ -87,8 +84,6 @@ export class CubeCellComponent extends Component {
         else {
             this.audioSource.clip = audioClip;
             let s = <any>this.audioSource.clip;
-            //this.audioSource.play();
-            console.log("In Cell",this.cellStatus);
             
             MessageManager.getInstance().Send("AudioPlay",s._audio,this.cellStatus);
         }
@@ -124,7 +119,7 @@ export class CubeCellComponent extends Component {
     OnAudioPlayBegin(cellSt:CellStatus){
         if(cellSt === this.cellStatus)
         {
-            this.anim.play("CubeTriggerred");
+            //this.anim.play("CubeTriggerred");
         }
 
     }

@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { UIBaseWidget } from '../UIFrame/UIBaseWidget';
+import { MessageManager } from '../../MessageSystem/MessageManager';
 const { ccclass, property } = _decorator;
 
 export const PageType = {
@@ -51,6 +52,7 @@ export class MainWidgetContainer extends UIBaseWidget {
         if(this.isOpend ===  false)
         {
             super.Show();
+            MessageManager.getInstance().Send("MainUIOpened");
             this.isOpend = true;
 
         }
@@ -58,8 +60,13 @@ export class MainWidgetContainer extends UIBaseWidget {
     }
 
     Hide(){
-        super.Hide();
-        this.isOpend = false;
+        if(this.isOpend === true)
+        {
+            super.Hide();
+            this.isOpend = false;
+            MessageManager.getInstance().Send("MainUIClosed");
+        }
+
 
     }
 }
