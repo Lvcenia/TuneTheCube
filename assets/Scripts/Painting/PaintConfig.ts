@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 /**这个类是绘制时前端向后端传递的绘制参数 包含层、x、y、颜色 */
 
 export class PaintConfig  {
-    constructor(layer:number,x:number,z:number,color:Color,keyname:string,notename:string)
+    constructor(layer:number,x:number,z:number,color:Color,keyname:string,notename:string,inst:string)
     {
         this.Layer = layer;
         this.X = x;
@@ -12,6 +12,7 @@ export class PaintConfig  {
         this.Color = color;
         this.KeyName = keyname;
         this.NoteName = notename;
+        this.InstrumentType = inst;
     }
     public Layer:number;
     public X:number;
@@ -19,4 +20,5 @@ export class PaintConfig  {
     public KeyName:string;
     public NoteName:string;
     public Color:Color;
+    public InstrumentType:string
 }

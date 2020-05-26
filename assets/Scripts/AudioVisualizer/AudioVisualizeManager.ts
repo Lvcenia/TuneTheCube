@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Prefab, instantiate, math } from 'cc';
 import { MessageManager } from '../MessageSystem/MessageManager';
+import { CellStatus } from '../NoteCube/CellStatus';
 const { ccclass, property } = _decorator;
 
 let AudioContext = window.AudioContext;
@@ -58,54 +59,29 @@ export class AudioVisualizeManager extends Component {
         window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
     }
 
-    onClick (a:AudioBuffer) {
 
-        // audioContext 只相当于一个容器。
-        let audioContext = new AudioContext();
+    onAudioStartPlay(audioBufer:AudioBuffer,cellStatus:CellStatus){
+
         // 要让 audioContext 真正丰富起来需要将实际的音乐信息传递给它的。
         // 也就是将 AudioBuffer 数据传递进去。
         // 以下就是创建音频资源节点管理者。
-        this.audioBufferSourceNode = audioContext.createBufferSource();
-        // 将 AudioBuffer 传递进去。
-        //MSG.MessageManager.getInstance().Send("play");
-        console.log("3");
-        this.add(AudioBuffer);
-        this.audioBufferSourceNode.buffer = this.audioArray[0];
-        // 创建分析器。
-        this.analyser = audioContext.createAnalyser();
-        // 精度设置
-        this.analyser.fftSize = 256;
-        // 在传到扬声器之前，连接到分析器。
-        this.audioBufferSourceNode.connect(this.analyser);
-        // 连接到扬声器。
-        this.analyser.connect(audioContext.destination);
-        // 开始播放
-        this.audioBufferSourceNode.start(0);
-    }
-
-    onAudioStartPlay(audioBufer:AudioBuffer){
-        let AudioContext = window.AudioContext;
-        // audioContext 只相当于一个容器。
-        let audioContext = new AudioContext();
-        // 要让 audioContext 真正丰富起来需要将实际的音乐信息传递给它的。
-        // 也就是将 AudioBuffer 数据传递进去。
-        // 以下就是创建音频资源节点管理者。
-        this.audioBufferSourceNode = audioContext.createBufferSource();
+        this.audioBufferSourceNode = this.audioContext.createBufferSource();
         // 将 AudioBuffer 传递进去。
         //MSG.MessageManager.getInstance().Send("play");
         console.log("3");
         this.add(audioBufer);
         this.audioBufferSourceNode.buffer = audioBufer;
         // 创建分析器。
-        this.analyser = audioContext.createAnalyser();
+        this.analyser = this.audioContext.createAnalyser();
         // 精度设置
         this.analyser.fftSize = 256;
         // 在传到扬声器之前，连接到分析器。
         this.audioBufferSourceNode.connect(this.analyser);
         // 连接到扬声器。
-        this.analyser.connect(audioContext.destination);
+        this.analyser.connect(this.audioContext.destination);
         // 开始播放
         this.audioBufferSourceNode.start(0);
+        MessageManager.getInstance().Send("CubeAudioPlayBegin",cellStatus);
     }
 
     add(AudioBuffer){

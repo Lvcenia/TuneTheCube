@@ -158,8 +158,6 @@ export class Painter extends Component {
 
     /**前端一个方块的颜色改变时调用，通知CubeManager绘制一个方块 顺便记录对应位置的颜色 */
     public PaintCell(config:PaintConfig){
-
-        
         this.cubeManager.OnCellPainted(config);
         this.storedCellColors[config.Layer][config.X][config.Z] = config.Color;
         
@@ -168,7 +166,6 @@ export class Painter extends Component {
 
     /**前端擦除一个方块的颜色时调用，通知CubeManager擦掉一个方块的颜色 同时将对应位置的颜色换为白色*/
     public EraseCell(config:PaintConfig){
-
         this.storedCellColors[config.Layer][config.X][config.Z] = Color.WHITE;
         this.cubeManager.OnCellErased(config);
 

@@ -24,7 +24,7 @@ export class CubeCellComponent extends Component {
     private collider:BoxColliderComponent = null;
 
     onLoad(){
-        
+        MessageManager.getInstance().Register("CubeAudioPlayBegin",this.OnAudioPlayBegin,this);
     }
 
     start () {
@@ -55,10 +55,11 @@ export class CubeCellComponent extends Component {
         notenameReal.replace(notenameReal.slice(0,2),NoteNameConvert[notenameReal.slice(0,2)]);
 
         //升号转s
-        notenameReal.replace('#','s');
+        console.log("ClipName before: " + notenameReal);
+        notenameReal = notenameReal.replace("#","s");
         
         let clipName = notenameReal+"-"+"guitar";
-        console.log("ClipName: " + clipName);
+        console.log("ClipName After: " + clipName);
         
         let audioClip = AudioManager.GetInstrumentClip(clipName);
         if(audioClip === null)
@@ -79,8 +80,8 @@ export class CubeCellComponent extends Component {
                 this.audioSource.clip = clip;
 
                 let s = <any>this.audioSource.clip;
-                MessageManager.getInstance().Send("AudioPlay",s._audio);
-                this.anim.play("CubeTriggerred");
+                MessageManager.getInstance().Send("AudioPlay",s._audio,this.cellStatus);
+
             });
         }
         else {
@@ -89,8 +90,7 @@ export class CubeCellComponent extends Component {
             //this.audioSource.play();
             console.log("In Cell",this.cellStatus);
             
-            MessageManager.getInstance().Send("AudioPlay",s._audio);
-            this.anim.play("CubeTriggerred");
+            MessageManager.getInstance().Send("AudioPlay",s._audio,this.cellStatus);
         }
 
 
@@ -118,6 +118,14 @@ export class CubeCellComponent extends Component {
         this.cellStatus.Color = Color.WHITE;
         this.setCellColor(Color.WHITE);
         this.cellStatus.isPainted = false;
+
+    }
+
+    OnAudioPlayBegin(cellSt:CellStatus){
+        if(cellSt === this.cellStatus)
+        {
+            this.anim.play("CubeTriggerred");
+        }
 
     }
 
